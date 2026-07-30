@@ -1,15 +1,14 @@
-from datetime import datetime
-
-from sqlalchemy import DateTime, String
+from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.base import Base
+from app.models.base_model import TimestampMixin
 
 
-class User(Base):
+class User(Base, TimestampMixin):
     __tablename__ = "users"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
 
     full_name: Mapped[str] = mapped_column(String(255))
 
@@ -20,8 +19,3 @@ class User(Base):
     )
 
     password_hash: Mapped[str] = mapped_column(String(255))
-
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
-    )
