@@ -2,16 +2,14 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from app.api.router import api_router
 from app.core.config import settings
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
-    Startup and shutdown events.
-
-    Resources such as the database, Redis connections,
-    schedulers, or background workers can be initialized here.
+    Application lifespan events.
     """
 
     print(f"Starting {settings.APP_NAME}...")
@@ -28,7 +26,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-
+# Root endpoint
 @app.get("/", tags=["Root"])
 async def root():
     return {
@@ -39,9 +37,17 @@ async def root():
     }
 
 
+# Health endpoint
 @app.get("/health", tags=["Health"])
 async def health_check():
     return {
         "success": True,
         "status": "healthy",
     }
+
+
+# Register API routes
+app.include_router(
+    api_router,
+    prefix=settings.API_V1_PREFIX,
+)
