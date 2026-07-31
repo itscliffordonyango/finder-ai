@@ -18,4 +18,4 @@ build/
 
 .idea/
 
-core/config.py
+backend/app/core/config.py
