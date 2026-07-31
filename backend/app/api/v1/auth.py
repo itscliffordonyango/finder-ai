@@ -5,6 +5,9 @@ from app.database.database import get_db
 from app.schemas.user import UserCreate, UserResponse
 from app.services.auth_service import AuthService
 
+from app.schemas.auth import LoginRequest
+from app.schemas.token import Token
+
 router = APIRouter()
 
 
@@ -19,4 +22,19 @@ async def register(
 ):
     service = AuthService(db)
 
-    return await service.register_user(user)
+    return await service.register(user)
+
+@router.post(
+    "/login",
+    response_model=Token,
+)
+async def login(
+    credentials: LoginRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    service = AuthService(db)
+
+    return await service.authenticate_user(
+        credentials.email,
+        credentials.password,
+    )
