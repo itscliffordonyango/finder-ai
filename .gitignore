@@ -17,3 +17,5 @@ build/
 .vscode/
 
 .idea/
+
+backend/app/core/config.py
