@@ -10,7 +10,7 @@ class RemoteOKScraper(BaseScraper):
     async def scrape(self) -> list[dict]:
 
         headers = {
-            "User-Agent": "JobFinderAI/1.0",
+            "User-Agent": "JobFinderAI/1.0"
         }
 
         async with httpx.AsyncClient(timeout=30) as client:
@@ -22,33 +22,38 @@ class RemoteOKScraper(BaseScraper):
 
             response.raise_for_status()
 
-            jobs = response.json()
+            data = response.json()
 
-        results = []
+        jobs = []
 
-        for job in jobs:
+        for item in data:
 
-            # First item is metadata
-            if not isinstance(job, dict):
+            if not isinstance(item, dict):
                 continue
 
-            if "position" not in job:
+            if not item.get("position"):
                 continue
 
-            results.append(
+            jobs.append(
                 {
-                    "title": job.get("position"),
-                    "company": job.get("company"),
-                    "location": job.get("location") or "Remote",
+                    "title": item.get("position"),
+                    "company": item.get("company"),
+                    "location": item.get("location") or "Remote",
                     "employment_type": None,
                     "experience_level": None,
-                    "description": job.get("description") or "",
-                    "url": job.get("url"),
+                    "description": item.get("description") or "",
+                    "url": item.get("url"),
                     "source": "RemoteOK",
-                    "salary": job.get("salary_min"),
-                    "skills": ", ".join(job.get("tags", [])),
+                    "salary": (
+                        str(item["salary_min"])
+                        if item.get("salary_min")
+                        else None
+                    ),
+                    "skills": ", ".join(
+                        item.get("tags", [])
+                    ),
                     "is_remote": True,
                 }
             )
 
-        return results
+        return jobs

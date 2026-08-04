@@ -17,3 +17,17 @@ class JobService:
             return existing
 
         return await self.repository.create(**kwargs)
+
+    async def search_jobs(
+        self,
+        keyword: str | None = None,
+        company: str | None = None,
+        location: str | None = None,
+        remote: bool | None = None,
+    ):
+        return await self.repository.search(
+            keyword=keyword,
+            company=company,
+            location=location,
+            remote=remote,
+        )
