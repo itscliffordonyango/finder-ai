@@ -8,7 +8,6 @@ from app.repositories.resume_repository import ResumeRepository
 
 
 class ResumeParserService:
-
     def __init__(self, db: AsyncSession):
         self.repository = ResumeRepository(db)
 
@@ -16,7 +15,6 @@ class ResumeParserService:
         self,
         resume_id: int,
     ):
-
         resume = await self.repository.get_by_id(
             resume_id
         )
@@ -33,6 +31,11 @@ class ResumeParserService:
 
         text = ParserService.parse(
             str(file_path)
+        )
+
+        await self.repository.save_extracted_text(
+            resume,
+            text,
         )
 
         return {
