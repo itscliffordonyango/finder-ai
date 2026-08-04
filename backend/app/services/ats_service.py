@@ -1,17 +1,15 @@
-from pathlib import Path
-
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.parsers.parser_service import ParserService
+from app.ai.ats import calculate_ats_score
 from app.repositories.resume_repository import ResumeRepository
 
 
-class ResumeParserService:
+class ATSService:
     def __init__(self, db: AsyncSession):
         self.repository = ResumeRepository(db)
 
-    async def parse_resume(
+    async def analyze(
         self,
         resume_id: int,
     ):
@@ -25,20 +23,6 @@ class ResumeParserService:
                 detail="Resume not found",
             )
 
-        backend_root = Path(__file__).resolve().parents[2]
-
-        file_path = backend_root / resume.file_path
-
-        text = ParserService.parse(
-            str(file_path)
+        return calculate_ats_score(
+            resume.extracted_text
         )
-
-        await self.repository.save_extracted_text(
-            resume,
-            text,
-        )
-
-        return {
-            "resume_id": resume.id,
-            "text": text,
-        }

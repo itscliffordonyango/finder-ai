@@ -9,11 +9,7 @@ class ResumeRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def create(
-        self,
-        **kwargs,
-    ) -> Resume:
-
+    async def create(self, **kwargs) -> Resume:
         resume = Resume(**kwargs)
 
         self.db.add(resume)
@@ -36,3 +32,17 @@ class ResumeRepository:
         )
 
         return result.scalar_one_or_none()
+
+    async def save_extracted_text(
+        self,
+        resume: Resume,
+        text: str,
+    ) -> Resume:
+
+        resume.extracted_text = text
+
+        await self.db.commit()
+
+        await self.db.refresh(resume)
+
+        return resume
