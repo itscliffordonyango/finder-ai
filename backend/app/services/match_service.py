@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.ai.matcher import calculate_match_score
+from app.ai.recommender import generate_recommendation
 from app.repositories.job_repository import JobRepository
 from app.repositories.resume_repository import ResumeRepository
 
@@ -29,9 +30,17 @@ class MatchService:
                 job.skills,
             )
 
+            recommendation = generate_recommendation(
+                resume.extracted_text,
+                job.skills,
+            )
+
             results.append(
                 {
                     "score": score,
+                    "strengths": recommendation["strengths"],
+                    "missing_skills": recommendation["missing_skills"],
+                    "recommendation": recommendation["recommendation"],
                     "job": job,
                 }
             )
