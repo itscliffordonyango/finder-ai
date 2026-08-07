@@ -1,3 +1,5 @@
+import re
+
 SKILLS = [
     "Python",
     "Java",
@@ -38,3 +40,24 @@ SKILLS = [
     "NumPy",
     "Scikit-learn",
 ]
+
+
+def extract_skills(text: str) -> list[str]:
+    """
+    Extract known skills from text.
+    """
+
+    if not text:
+        return []
+
+    text_lower = text.lower()
+
+    found = []
+
+    for skill in SKILLS:
+        pattern = r"\b" + re.escape(skill.lower()) + r"\b"
+
+        if re.search(pattern, text_lower):
+            found.append(skill)
+
+    return sorted(set(found))

@@ -13,9 +13,21 @@ class Settings(BaseSettings):
 
     SECRET_KEY: str
 
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    OPENAI_API_KEY: str = ""
+    OPENAI_MODEL: str = "gpt-4.1-mini"
 
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-3.6-flash"
+
+    OLLAMA_API_KEY: str = ""
+    
+
+    AI_PROVIDER: str = "ollama"
+
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    
     ALGORITHM: str = "HS256"
+    
 
     model_config = SettingsConfigDict(
         env_file=".env",

@@ -1,31 +1,22 @@
-from app.ai.extractor import extract_skills
+from app.ai.skills import extract_skills
 
 
 def generate_recommendation(
     resume_text: str,
     job_skills: str | None,
 ):
-    """
-    Compare resume skills against job skills and
-    generate an explanation.
-    """
-
-    if not job_skills:
-        return {
-            "strengths": [],
-            "missing_skills": [],
-            "recommendation": "No skills listed for this job.",
-        }
-
     resume_skills = set(
         extract_skills(resume_text)
     )
 
-    required = {
-        skill.strip()
-        for skill in job_skills.split(",")
-        if skill.strip()
-    }
+    required = set()
+
+    if job_skills:
+        required = {
+            skill.strip()
+            for skill in job_skills.split(",")
+            if skill.strip()
+        }
 
     strengths = sorted(
         resume_skills & required
@@ -35,19 +26,14 @@ def generate_recommendation(
         required - resume_skills
     )
 
-    if not missing:
+    if missing:
         recommendation = (
-            "Excellent match. Apply immediately."
+            "Improve these skills: "
+            + ", ".join(missing[:5])
         )
-
-    elif len(missing) <= 2:
-        recommendation = (
-            "Good match. Learning the missing skills could significantly improve your chances."
-        )
-
     else:
         recommendation = (
-            "Moderate match. Consider strengthening the missing skills before applying."
+            "Excellent match."
         )
 
     return {
