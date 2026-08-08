@@ -20,9 +20,9 @@ class Settings(BaseSettings):
     GEMINI_MODEL: str = "gemini-3.6-flash"
 
     OLLAMA_API_KEY: str = ""
-    
 
-    AI_PROVIDER: str = "ollama"
+
+    AI_PROVIDER: str = "openai"
 
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     
