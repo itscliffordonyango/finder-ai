@@ -46,3 +46,24 @@ class ResumeRepository:
         await self.db.refresh(resume)
 
         return resume
+
+
+    async def get_latest(
+            self,
+            user_id: int,
+            ):
+        result = await self.db.execute(
+            select(Resume).where(
+                Resume.user_id == user_id
+                )
+                .order_by(
+                    Resume.created_at.desc()
+                    )
+                    )
+        return result.scalars().first()
+
+    async def get_all(self):
+        result = await self.db.execute(
+            select(Resume)
+            )
+        return result.scalars().all()

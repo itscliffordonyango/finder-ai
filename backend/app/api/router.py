@@ -7,7 +7,9 @@ from app.api.v1.jobs import router as jobs_router
 from app.api.v1.match import router as match_router
 from app.api.v1.analysis import router as analysis_router
 from app.api.v1.ats import router as ats_router
-
+from app.api.v1.applications import router as application_router
+from app.api.v1.dashboard import router as dashboard_router
+from app.api.v1.cover_letter import router as cover_letter_router
 
 
 api_router = APIRouter()
@@ -46,4 +48,22 @@ api_router.include_router(
     ats_router,
     prefix="/ats",
     tags=["ATS Analysis"],
+)
+
+api_router.include_router(
+    application_router,
+    prefix="/applications",
+    tags=["Applications"],
+)
+
+api_router.include_router(
+    dashboard_router,
+    prefix="/dashboard",
+    tags=["Dashboard"],
+)
+
+api_router.include_router(
+    cover_letter_router,
+    prefix="/cover-letters",
+    tags=["AI Cover Letters"],
 )

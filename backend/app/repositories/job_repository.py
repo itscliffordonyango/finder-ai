@@ -1,4 +1,4 @@
-from sqlalchemy import select, or_
+from sqlalchemy import select, or_ , func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.job import Job
@@ -19,16 +19,21 @@ class JobRepository:
         await self.db.refresh(job)
 
         return job
-
-    async def get_all(self):
-
+    async def get_all(
+    self,
+    page: int = 1,
+    limit: int = 20,
+    ):
+        offset = (page - 1) * limit
         result = await self.db.execute(
-            select(Job)
-            .order_by(Job.created_at.desc())
-        )
-
+        select(Job)
+        .order_by(Job.created_at.desc())
+        .offset(offset)
+        .limit(limit)
+    )
         return result.scalars().all()
 
+    
     async def get_by_url(
         self,
         url: str,
@@ -91,3 +96,9 @@ class JobRepository:
         result = await self.db.execute(query)
 
         return result.scalars().all()
+
+    async def count(self):
+        result = await self.db.execute(
+            select(func.count(Job.id))
+    )
+        return result.scalar_one()

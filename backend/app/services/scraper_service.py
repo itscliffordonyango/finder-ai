@@ -1,38 +1,37 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.job_repository import JobRepository
-from app.scrapers.scraper_manager import ScraperManager
+from app.scrapers.remoteok import RemoteOKScraper
+from app.scrapers.weworkremotely import WeWorkRemotelyScraper
 
 
 class ScraperService:
 
     def __init__(self, db: AsyncSession):
         self.repository = JobRepository(db)
-        self.manager = ScraperManager()
 
     async def refresh_jobs(self):
 
-        jobs = await self.manager.scrape_all()
+        scrapers = [
+            RemoteOKScraper(),
+            WeWorkRemotelyScraper()
+        ]
 
-        added = 0
-        duplicates = 0
+        jobs_added = 0
+        total_found = 0
 
-        for job in jobs:
-
-            existing = await self.repository.get_by_url(
-                job["url"]
-            )
-
-            if existing:
-                duplicates += 1
+        for scraper in scrapers:
+            try:
+                jobs = await scraper.scrape()
+            except Exception as exc:
+                print(f"{scraper.__class__.__name__} failed: {exc}")
                 continue
 
-            await self.repository.create(**job)
-
-            added += 1
-
-        return {
-            "jobs_found": len(jobs),
-            "jobs_added": added,
-            "duplicates": duplicates,
-        }
+            total_found += len(jobs)
+            
+            for job in jobs:
+                existing = await self.repository.get_by_url(job["url"])
+                if existing:
+                    continue
+                await self.repository.create(**job)
+                jobs_added += 1
