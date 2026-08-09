@@ -5,39 +5,60 @@ def generate_recommendation(
     resume_text: str,
     job_skills: str | None,
 ):
-    resume_skills = set(
-        extract_skills(resume_text)
-    )
+    resume_skills = {
+        skill.lower()
+        for skill in extract_skills(resume_text)
+    }
 
-    required = set()
+    required_skills = set()
 
     if job_skills:
-        required = {
-            skill.strip()
+        required_skills = {
+            skill.strip().lower()
             for skill in job_skills.split(",")
             if skill.strip()
         }
 
-    strengths = sorted(
-        resume_skills & required
+    matched_skills = sorted(
+        resume_skills & required_skills
     )
 
-    missing = sorted(
-        required - resume_skills
+    missing_skills = sorted(
+        required_skills - resume_skills
     )
 
-    if missing:
-        recommendation = (
-            "Improve these skills: "
-            + ", ".join(missing[:5])
+    total_required = len(required_skills)
+    total_matched = len(matched_skills)
+
+    if total_required:
+        score = round(
+            (total_matched / total_required) * 100,
+            2,
         )
     else:
-        recommendation = (
-            "Excellent match."
-        )
+        score = 0.0
+
+    if score >= 80:
+        recommendation = "Excellent match"
+        priority = "high"
+
+    elif score >= 60:
+        recommendation = "Strong match"
+        priority = "medium"
+
+    elif score >= 40:
+        recommendation = "Potential match"
+        priority = "low"
+
+    else:
+        recommendation = "Weak match"
+        priority = "low"
 
     return {
-        "strengths": strengths,
-        "missing_skills": missing,
+        "score": score,
+        "matched_skills": matched_skills,
+        "missing_skills": missing_skills,
         "recommendation": recommendation,
+        "priority": priority,
     }
+
