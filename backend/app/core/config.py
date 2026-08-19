@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     # =========================
 
     OPENAI_API_KEY: str = ""
-    OPENAI_MODEL: str = "gpt-4.1-mini"
+    OPENAI_MODEL: str = "gpt-5.6-sol"
 
     # =========================
     # Gemini
@@ -40,7 +40,7 @@ class Settings(BaseSettings):
     # AI Provider
     # =========================
 
-    AI_PROVIDER: str = "ollama"
+    AI_PROVIDER: str = "openai"
 
     # =========================
     # Authentication
